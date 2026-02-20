@@ -1,5 +1,5 @@
 #*
-*  Copyright 2018 Curity AB
+*  Copyright 2026 Curity AB
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -49,16 +49,12 @@
 
     #if ($iframeHeight == 0 && $iframeWidth == 0)
         ## The page will be displayed in a hidden iframe, so we'll show a spinner and some prompts
-        
+
         <p class="h4 mb4 semibold center" id="poll_message">#message("${_templatePrefix}.view.title.${country}")</p>
 
-        <div class="px4 mb4">
-            <div class="loader center">
-                <div class="loader-inner ball-pulse">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
+        <div class="area center">
+            <div class="center p2">
+                #parse("fragments/spinner")
             </div>
         </div>
 
@@ -67,14 +63,16 @@
         </div>
 
         <form name="cancel" action="$!cancelAction" class="manuallink display-none" method="get">
-            <button type="submit" class="button button-fullwidth button-danger-outline">#message($_messages,
+            <button type="submit" class="button button-fullwidth button-danger">#message($_messages,
                 "${_templatePrefix}.view.button.cancel")</button>
         </form>
 
         #set($displayAttr = 'class="display-none"')
     #end
 
-    <iframe id="iframeId" src="$!authorizeUrl" height="$iframeHeight" width="$iframeWidth" $!displayAttr frameborder="0" scrolling="no"></iframe>
+    <div class="center">
+        <iframe id="iframeId" src="$!authorizeUrl" height="$iframeHeight" width="$iframeWidth" $!displayAttr frameborder="0" scrolling="no"></iframe>
+    </div>
 
     <form id="dataForm" action="$_authUrl/callback" method="post"></form>
 

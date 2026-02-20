@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018 Curity AB
+ *  Copyright 2026 Curity AB
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  *  limitations under the License.
  */
 
-package io.curity.identityserver.plugin.criipto.descriptor;
+package io.curity.identityserver.plugin.idura.descriptor;
 
-import io.curity.identityserver.plugin.criipto.authentication.CallbackRequestHandler;
-import io.curity.identityserver.plugin.criipto.authentication.CancelRequestHandler;
-import io.curity.identityserver.plugin.criipto.authentication.CriiptoAuthenticatorRequestHandler;
-import io.curity.identityserver.plugin.criipto.config.CriiptoAuthenticatorPluginConfig;
+import io.curity.identityserver.plugin.idura.authentication.CallbackRequestHandler;
+import io.curity.identityserver.plugin.idura.authentication.CancelRequestHandler;
+import io.curity.identityserver.plugin.idura.authentication.IduraAuthenticatorRequestHandler;
+import io.curity.identityserver.plugin.idura.config.IduraAuthenticatorPluginConfig;
 import se.curity.identityserver.sdk.authentication.AuthenticatorRequestHandler;
 import se.curity.identityserver.sdk.plugin.descriptor.AuthenticatorPluginDescriptor;
 
@@ -27,8 +27,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public final class CriiptoAuthenticatorPluginDescriptor
-        implements AuthenticatorPluginDescriptor<CriiptoAuthenticatorPluginConfig>
+public final class IduraAuthenticatorPluginDescriptor
+        implements AuthenticatorPluginDescriptor<IduraAuthenticatorPluginConfig>
 {
     public final static String CALLBACK = "callback";
     public final static String CANCEL = "cancel";
@@ -36,13 +36,13 @@ public final class CriiptoAuthenticatorPluginDescriptor
     @Override
     public String getPluginImplementationType()
     {
-        return "criipto";
+        return "idura";
     }
 
     @Override
-    public Class<? extends CriiptoAuthenticatorPluginConfig> getConfigurationType()
+    public Class<? extends IduraAuthenticatorPluginConfig> getConfigurationType()
     {
-        return CriiptoAuthenticatorPluginConfig.class;
+        return IduraAuthenticatorPluginConfig.class;
     }
 
     @Override
@@ -50,7 +50,7 @@ public final class CriiptoAuthenticatorPluginDescriptor
     {
         Map<String, Class<? extends AuthenticatorRequestHandler<?>>> handlers = new LinkedHashMap<>(2);
 
-        handlers.put("index", CriiptoAuthenticatorRequestHandler.class);
+        handlers.put("index", IduraAuthenticatorRequestHandler.class);
         handlers.put(CANCEL, CancelRequestHandler.class);
         handlers.put(CALLBACK, CallbackRequestHandler.class);
 

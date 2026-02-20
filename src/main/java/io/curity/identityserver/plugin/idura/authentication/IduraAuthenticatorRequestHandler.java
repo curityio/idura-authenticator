@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018 Curity AB
+ *  Copyright 2026 Curity AB
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,15 +14,14 @@
  *  limitations under the License.
  */
 
-package io.curity.identityserver.plugin.criipto.authentication;
+package io.curity.identityserver.plugin.idura.authentication;
 
-import io.curity.identityserver.plugin.criipto.config.CriiptoAuthenticatorPluginConfig;
+import io.curity.identityserver.plugin.idura.config.IduraAuthenticatorPluginConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.curity.identityserver.sdk.attribute.Attribute;
 import se.curity.identityserver.sdk.authentication.AuthenticationResult;
 import se.curity.identityserver.sdk.authentication.AuthenticatorRequestHandler;
-import se.curity.identityserver.sdk.errors.ErrorCode;
 import se.curity.identityserver.sdk.http.HttpStatus;
 import se.curity.identityserver.sdk.service.ExceptionFactory;
 import se.curity.identityserver.sdk.service.UserPreferenceManager;
@@ -42,25 +41,26 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import static io.curity.identityserver.plugin.criipto.authentication.RedirectUriUtil.createRedirectUri;
-import static io.curity.identityserver.plugin.criipto.config.CriiptoAuthenticatorPluginConfig.Country.Norway.LoginUsing.MOBILE_DEVICE;
-import static io.curity.identityserver.plugin.criipto.config.CriiptoAuthenticatorPluginConfig.Country.Sweden.LoginUsing.OTHER_DEVICE;
-import static io.curity.identityserver.plugin.criipto.descriptor.CriiptoAuthenticatorPluginDescriptor.CANCEL;
+import static io.curity.identityserver.plugin.idura.authentication.RedirectUriUtil.createRedirectUri;
+import static io.curity.identityserver.plugin.idura.config.IduraAuthenticatorPluginConfig.Country.Norway.LoginUsing.MOBILE_DEVICE;
+import static io.curity.identityserver.plugin.idura.config.IduraAuthenticatorPluginConfig.Country.Sweden.LoginUsing.OTHER_DEVICE;
+import static io.curity.identityserver.plugin.idura.config.IduraAuthenticatorPluginConfig.Country.Sweden.LoginUsing.SAME_DEVICE;
+import static io.curity.identityserver.plugin.idura.descriptor.IduraAuthenticatorPluginDescriptor.CANCEL;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static se.curity.identityserver.sdk.web.ResponseModel.templateResponseModel;
 
-public class CriiptoAuthenticatorRequestHandler implements AuthenticatorRequestHandler<RequestModel>
+public class IduraAuthenticatorRequestHandler implements AuthenticatorRequestHandler<RequestModel>
 {
-    private static final Logger _logger = LoggerFactory.getLogger(CriiptoAuthenticatorRequestHandler.class);
+    private static final Logger _logger = LoggerFactory.getLogger(IduraAuthenticatorRequestHandler.class);
     private final String _authorizationEndpoint;
 
-    private final CriiptoAuthenticatorPluginConfig _config;
+    private final IduraAuthenticatorPluginConfig _config;
     private final AuthenticatorInformationProvider _authenticatorInformationProvider;
     private final ExceptionFactory _exceptionFactory;
     private final UserPreferenceManager _userPreferenceManager;
 
-    public CriiptoAuthenticatorRequestHandler(CriiptoAuthenticatorPluginConfig config)
+    public IduraAuthenticatorRequestHandler(IduraAuthenticatorPluginConfig config)
     {
         _config = config;
         _exceptionFactory = config.getExceptionFactory();
@@ -78,7 +78,7 @@ public class CriiptoAuthenticatorRequestHandler implements AuthenticatorRequestH
 
         _config.getCountry().getSweden().ifPresent(item ->
         {
-            if (item.getLoginUsing() == OTHER_DEVICE)
+            if (item.getLogInUsing() == OTHER_DEVICE)
             {
                 isRedirect[0] = false;
             }
@@ -86,7 +86,7 @@ public class CriiptoAuthenticatorRequestHandler implements AuthenticatorRequestH
 
         _config.getCountry().getNorway().ifPresent(item ->
         {
-            if (item.getLoginUsing() == MOBILE_DEVICE)
+            if (item.getLogInUsing() == MOBILE_DEVICE)
             {
                 isRedirect[0] = true;
             }
@@ -130,11 +130,15 @@ public class CriiptoAuthenticatorRequestHandler implements AuthenticatorRequestH
 
         _config.getCountry().getSweden().ifPresent(item ->
         {
-            viewData.put("iframeHeight", 0);
-            viewData.put("iframeWidth", 0);
+            if (item.getLogInUsing() == SAME_DEVICE) {
+                // The app will be started automatically, so the iframe can stay hidden
+                viewData.put("iframeHeight", 0);
+                viewData.put("iframeWidth", 0);
+            }
+
             viewData.put("country", "swedish");
 
-            if (item.getLoginUsing() == OTHER_DEVICE)
+            if (item.getLogInUsing() == OTHER_DEVICE)
             {
                 scopes.add("sub:" + requestModel.getPersonalNumber());
             }
@@ -143,7 +147,7 @@ public class CriiptoAuthenticatorRequestHandler implements AuthenticatorRequestH
         _config.getCountry().getNorway().ifPresent(item ->
         {
             viewData.put("country", "norwegian");
-            if (item.getLoginUsing() == MOBILE_DEVICE)
+            if (item.getLogInUsing() == MOBILE_DEVICE)
             {
                 viewData.put("iframeHeight", 240);
                 viewData.put("iframeWidth", 388);
@@ -154,7 +158,7 @@ public class CriiptoAuthenticatorRequestHandler implements AuthenticatorRequestH
                 viewData.put("iframeWidth", 500);
             }
         });
-        
+
         setAcrValues(acrValues);
 
         _config.getSessionManager().put(Attribute.of("state", state));
@@ -184,13 +188,13 @@ public class CriiptoAuthenticatorRequestHandler implements AuthenticatorRequestH
     {
         _config.getCountry().getSweden().ifPresent(swedishOption ->
         {
-            switch (swedishOption.getLoginUsing())
+            switch (swedishOption.getLogInUsing())
             {
                 case SAME_DEVICE:
                 {
                     String acr = "urn:grn:authn:se:bankid:same-device";
 
-                    _logger.debug("Adding ACR ({}) that will cause Criipto to perform Swedish BankID login on the " +
+                    _logger.debug("Adding ACR ({}) that will cause Idura to perform Swedish BankID login on the " +
                             "same device", acr);
 
                     acrValues.add(acr);
@@ -201,7 +205,7 @@ public class CriiptoAuthenticatorRequestHandler implements AuthenticatorRequestH
                 {
                     String acr = "urn:grn:authn:se:bankid:another-device";
 
-                    _logger.debug("Adding ACR ({}) that will cause Criipto to perform Swedish BankID login on a " +
+                    _logger.debug("Adding ACR ({}) that will cause Idura to perform Swedish BankID login on a " +
                             "different device", acr);
 
                     acrValues.add(acr);
@@ -213,13 +217,13 @@ public class CriiptoAuthenticatorRequestHandler implements AuthenticatorRequestH
 
         _config.getCountry().getNorway().ifPresent(norwegianOption ->
         {
-            switch (norwegianOption.getLoginUsing())
+            switch (norwegianOption.getLogInUsing())
             {
                 case MOBILE_DEVICE:
                 {
                     String acr = "urn:grn:authn:no:bankid:mobile";
 
-                    _logger.debug("Adding ACR ({}) that will cause Criipto to perform Norwegian BankID login on a " +
+                    _logger.debug("Adding ACR ({}) that will cause Idura to perform Norwegian BankID login on a " +
                             "mobile device", acr);
 
                     acrValues.add(acr);
@@ -230,7 +234,7 @@ public class CriiptoAuthenticatorRequestHandler implements AuthenticatorRequestH
                 {
                     String acr = "urn:grn:authn:no:bankid:central";
 
-                    _logger.debug("Adding ACR ({}) that will cause Criipto to perform Norwegian BankID login using " +
+                    _logger.debug("Adding ACR ({}) that will cause Idura to perform Norwegian BankID login using " +
                             "a hardware device", acr);
 
                     acrValues.add(acr);
@@ -248,8 +252,8 @@ public class CriiptoAuthenticatorRequestHandler implements AuthenticatorRequestH
                 {
                     String acr = "urn:grn:authn:dk:nemid:poces";
 
-                    _logger.debug("Adding ACR ({}) that will cause Criipto to perform Danish NemID login for " +
-                            "private citizens (i.e., regular banking users)");
+                    _logger.debug("Adding ACR ({}) that will cause Idura to perform Danish NemID login for " +
+                            "private citizens (i.e., regular banking users)", acr);
 
                     acrValues.add(acr);
 
@@ -259,8 +263,8 @@ public class CriiptoAuthenticatorRequestHandler implements AuthenticatorRequestH
                 {
                     String acr = "urn:grn:authn:dk:nemid:moces";
 
-                    _logger.debug("Adding ACR ({}) that will cause Criipto to perform Danish NemID login for " +
-                            "banking employees");
+                    _logger.debug("Adding ACR ({}) that will cause Idura to perform Danish NemID login for " +
+                            "banking employees", acr);
 
                     acrValues.add(acr);
 
@@ -270,8 +274,8 @@ public class CriiptoAuthenticatorRequestHandler implements AuthenticatorRequestH
                 {
                     String acr = "urn:grn:authn:dk:nemid:moces:codefile";
 
-                    _logger.debug("Adding ACR ({}) that will cause Criipto to perform Danish NemID login for banking " +
-                            "employees using an installed application");
+                    _logger.debug("Adding ACR ({}) that will cause Idura to perform Danish NemID login for banking " +
+                            "employees using an installed application", acr);
 
                     acrValues.add(acr);
 
@@ -287,7 +291,7 @@ public class CriiptoAuthenticatorRequestHandler implements AuthenticatorRequestH
         if (request.getPersonalNumber() != null)
         {
             _userPreferenceManager.saveUsername(request.getPersonalNumber());
-            
+
             redirectToAuthorization(request, response);
         }
 
@@ -299,7 +303,7 @@ public class CriiptoAuthenticatorRequestHandler implements AuthenticatorRequestH
     {
         _config.getCountry().getSweden().ifPresent(item ->
         {
-            if (item.getLoginUsing() == OTHER_DEVICE)
+            if (item.getLogInUsing() == OTHER_DEVICE)
             {
                 if (request.isGetRequest())
                 {
