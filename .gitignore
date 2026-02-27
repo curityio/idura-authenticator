@@ -5,3 +5,5 @@ target/
 ${DIST_DIR}/
 deploy.sh
 .git-old/
+.DS_Store
+

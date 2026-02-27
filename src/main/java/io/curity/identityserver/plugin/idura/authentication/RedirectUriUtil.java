@@ -1,5 +1,5 @@
 /*
- *  Copyright 2022 Curity AB
+ *  Copyright 2026 Curity AB
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package io.curity.identityserver.plugin.criipto.authentication;
+package io.curity.identityserver.plugin.idura.authentication;
 
 import se.curity.identityserver.sdk.errors.ErrorCode;
 import se.curity.identityserver.sdk.service.ExceptionFactory;
@@ -23,7 +23,7 @@ import se.curity.identityserver.sdk.service.authentication.AuthenticatorInformat
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static io.curity.identityserver.plugin.criipto.descriptor.CriiptoAuthenticatorPluginDescriptor.CALLBACK;
+import static io.curity.identityserver.plugin.idura.descriptor.IduraAuthenticatorPluginDescriptor.CALLBACK;
 
 final class RedirectUriUtil
 {

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018 Curity AB
+ *  Copyright 2026 Curity AB
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  *  limitations under the License.
  */
 
-package io.curity.identityserver.plugin.criipto.authentication;
+package io.curity.identityserver.plugin.idura.authentication;
 
-import io.curity.identityserver.plugin.criipto.config.CriiptoAuthenticatorPluginConfig;
+import io.curity.identityserver.plugin.idura.config.IduraAuthenticatorPluginConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.curity.identityserver.sdk.Nullable;
@@ -49,7 +49,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static io.curity.identityserver.plugin.criipto.authentication.RedirectUriUtil.createRedirectUri;
+import static io.curity.identityserver.plugin.idura.authentication.RedirectUriUtil.createRedirectUri;
 import static se.curity.identityserver.sdk.web.ResponseModel.templateResponseModel;
 
 public class CallbackRequestHandler implements AuthenticatorRequestHandler<CallbackRequestModel>
@@ -57,12 +57,12 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
     private final static Logger _logger = LoggerFactory.getLogger(CallbackRequestHandler.class);
 
     private final ExceptionFactory _exceptionFactory;
-    private final CriiptoAuthenticatorPluginConfig _config;
+    private final IduraAuthenticatorPluginConfig _config;
     private final Json _json;
     private final AuthenticatorInformationProvider _authenticatorInformationProvider;
     private final WebServiceClientFactory _webServiceClientFactory;
 
-    public CallbackRequestHandler(CriiptoAuthenticatorPluginConfig config)
+    public CallbackRequestHandler(IduraAuthenticatorPluginConfig config)
     {
         _exceptionFactory = config.getExceptionFactory();
         _config = config;
@@ -146,8 +146,8 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
                     Attribute.of("name", claimsMap.get("name").toString()));
 
             Attributes contextAttributes = Attributes.of(
-                    Attribute.of("criipto_access_token", tokenResponseData.get("access_token").toString()),
-                    Attribute.of("criipto_id_token", tokenResponseData.get("id_token").toString()));
+                    Attribute.of("idura_access_token", tokenResponseData.get("access_token").toString()),
+                    Attribute.of("idura_id_token", tokenResponseData.get("id_token").toString()));
 
             AuthenticationAttributes attributes = AuthenticationAttributes.of(
                     SubjectAttributes.of(userId[0], subjectAttributes),
@@ -210,7 +210,7 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
         {
             if ("access_denied".equals(requestModel.getError()))
             {
-                _logger.debug("Got an error from Criipto: {} - {}", requestModel.getError(), requestModel
+                _logger.debug("Got an error from Idura: {} - {}", requestModel.getError(), requestModel
                         .getErrorDescription());
 
                 throw _exceptionFactory.redirectException(
@@ -219,15 +219,15 @@ public class CallbackRequestHandler implements AuthenticatorRequestHandler<Callb
             else if ("USER_CANCEL".equals(requestModel.getError()))
             {
                 _logger.debug("User canceled authentication");
-                
+
                 throw _exceptionFactory.redirectException(
                         _authenticatorInformationProvider.getAuthenticationBaseUri().toASCIIString());
             }
 
-            _logger.warn("Got an error from Criipto: {} - {}", requestModel.getError(), requestModel
+            _logger.warn("Got an error from Idura: {} - {}", requestModel.getError(), requestModel
                     .getErrorDescription());
 
-            throw _exceptionFactory.externalServiceException("Login with Criipto failed");
+            throw _exceptionFactory.externalServiceException("Login with Idura failed");
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018 Curity AB
+ *  Copyright 2026 Curity AB
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  *  limitations under the License.
  */
 
-package io.curity.identityserver.plugin.criipto.authentication;
+package io.curity.identityserver.plugin.idura.authentication;
 
-import io.curity.identityserver.plugin.criipto.config.CriiptoAuthenticatorPluginConfig;
+import io.curity.identityserver.plugin.idura.config.IduraAuthenticatorPluginConfig;
 import se.curity.identityserver.sdk.authentication.AuthenticationResult;
 import se.curity.identityserver.sdk.authentication.AuthenticatorRequestHandler;
 import se.curity.identityserver.sdk.service.ExceptionFactory;
@@ -31,7 +31,7 @@ public class CancelRequestHandler implements AuthenticatorRequestHandler<Request
     private final ExceptionFactory _exceptionFactory;
     private final AuthenticatorInformationProvider _authenticatorInformationProvider;
 
-    public CancelRequestHandler(CriiptoAuthenticatorPluginConfig config)
+    public CancelRequestHandler(IduraAuthenticatorPluginConfig config)
     {
         _exceptionFactory = config.getExceptionFactory();
         _authenticatorInformationProvider = config.getAuthenticatorInformationProvider();
